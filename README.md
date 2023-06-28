@@ -29,9 +29,13 @@ Investigate the messaging functionality, which leverages Apple's frameworks for 
 To install and use the Birthday Tracker app:
 
 Clone the repository:
+
 git clone ```https://github.com/your-username/birthday-tracker.git```
+
 Open the project in Xcode:
+
 ```cd birthday-tracker```
+
 ```open BirthdayTracker.xcodeproj```
 
 Build and run the app on your iOS device or simulator using Xcode.
