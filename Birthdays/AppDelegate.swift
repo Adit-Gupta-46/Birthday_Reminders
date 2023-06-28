@@ -18,24 +18,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        requestNotificationAuthorization()
         ContactCheck()
-        
-        
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.birthdays.backgroundAppRefreshIdentifier", using: nil) { task in
+            print("[BGTASK] Perform bg fetch com.birthdays.backgroundAppRefreshIdentifier")
+            self.handleAppRefreshTask(task: task as! BGAppRefreshTask)
+        }
         return true
     }
     
+    func handleAppRefreshTask(task: BGAppRefreshTask) {
+        ContactCheck()
+        scheduleBackgroundContactsFetch()
+    }
+    
+    func scheduleBackgroundContactsFetch() {
+        let contactsFetchTask = BGAppRefreshTaskRequest(identifier: "com.birthdays.backgroundAppRefreshIdentifier")
+        contactsFetchTask.earliestBeginDate = Date(timeIntervalSinceNow: 5)
+        print("test")
+        do {
+          try BGTaskScheduler.shared.submit(contactsFetchTask)
+        } catch {
+          print("Unable to submit task: \(error.localizedDescription)")
+        }
+    }
+    
+    func setDefaults() {
+        
+    }
+    
+    
     func ContactCheck(){
+        requestNotificationAuthorization()
+        print("hhh")
         if UserDefaults.standard.object(forKey: "storedContacts") == nil {
             //storedContacts doesn't exist
             let dictionary : [String: String] = [:]
             UserDefaults.standard.set(dictionary, forKey: "storedContacts")
         }
-        var storedContacts = UserDefaults.standard.object(forKey: "storedContacts") as? [String:String]
+        var ContactsInNotifications = UserDefaults.standard.object(forKey: "storedContacts") as? [String:String]
         
         let contacts = fetchContacts()
-        
-        
         
         let date = Date()
         let currentDate = Calendar.current.component(.day, from: date)
@@ -46,21 +68,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let contactDay = (contact.birthday?.day)!
             
             // if birthday is today or yet to come and isn't already added, add it
-            if storedContacts![contact.name] == nil && (contactMonth > currentMonth || (contactMonth == currentMonth && contactDay >= currentDate)){
+            if ContactsInNotifications![contact.name] == nil && (contactMonth > currentMonth || (contactMonth == currentMonth && contactDay >= currentDate)){
                 //add notification
                 addNotification(name: contact.name, bDay: contact.birthday!)
                 //Key doesn't exist
-                storedContacts![contact.name] = contact.bDay
+                ContactsInNotifications![contact.name] = contact.bDay
                 
             }
             
-//             if birthday has passed and is added. remove it
-            else if storedContacts![contact.name] != nil && (contactMonth < currentMonth || (contactMonth == currentMonth && contactDay < currentDate)){
-                storedContacts![contact.name] = nil
+            // if birthday has passed and is added. remove it
+            else if ContactsInNotifications![contact.name] != nil && (contactMonth < currentMonth || (contactMonth == currentMonth && contactDay < currentDate)){
+                ContactsInNotifications![contact.name] = nil
             }
         }
         
-        UserDefaults.standard.set(storedContacts, forKey: "storedContacts")
+        UserDefaults.standard.set(ContactsInNotifications, forKey: "storedContacts")
     }
     
     func fetchContacts() -> Set<CNContact>{
@@ -119,7 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         let notificationContent = UNMutableNotificationContent()
         notificationContent.title = "It's \(name)'s birthday!"
-        notificationContent.body = "Make sure to wish them a Happy Birthday!"
+        notificationContent.body = "Make sure to wish them a happy birthday!"
         notificationContent.badge = NSNumber(value: 1)
         
         if let url = Bundle.main.url(forResource: "dune",

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DAAB61A72874B99C00937934 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAAB61A62874B99B00937934 /* SettingsView.swift */; };
+		DAAB61A928765F5D00937934 /* DetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAAB61A828765F5C00937934 /* DetailedView.swift */; };
 		DADF9296285BB99B005F4586 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADF9295285BB99B005F4586 /* AppDelegate.swift */; };
 		DADF9298285BB99B005F4586 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADF9297285BB99B005F4586 /* SceneDelegate.swift */; };
 		DADF929A285BB99B005F4586 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DADF9299285BB99B005F4586 /* ContentView.swift */; };
@@ -35,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DAAB61A62874B99B00937934 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DAAB61A828765F5C00937934 /* DetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedView.swift; sourceTree = "<group>"; };
 		DADF9292285BB99B005F4586 /* Birthdays.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Birthdays.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DADF9295285BB99B005F4586 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DADF9297285BB99B005F4586 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -102,6 +106,8 @@
 				DADF9295285BB99B005F4586 /* AppDelegate.swift */,
 				DADF9297285BB99B005F4586 /* SceneDelegate.swift */,
 				DADF9299285BB99B005F4586 /* ContentView.swift */,
+				DAAB61A62874B99B00937934 /* SettingsView.swift */,
+				DAAB61A828765F5C00937934 /* DetailedView.swift */,
 				DADF929B285BB99D005F4586 /* Assets.xcassets */,
 				DADF92A0285BB99D005F4586 /* LaunchScreen.storyboard */,
 				DADF92A3285BB99D005F4586 /* Info.plist */,
@@ -267,6 +273,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DADF9296285BB99B005F4586 /* AppDelegate.swift in Sources */,
+				DAAB61A72874B99C00937934 /* SettingsView.swift in Sources */,
+				DAAB61A928765F5D00937934 /* DetailedView.swift in Sources */,
 				DADF9298285BB99B005F4586 /* SceneDelegate.swift in Sources */,
 				DADF929A285BB99B005F4586 /* ContentView.swift in Sources */,
 			);
@@ -424,6 +432,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";

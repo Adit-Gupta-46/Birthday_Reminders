@@ -11,49 +11,102 @@ import Contacts
 struct ContentView: View {
     
     @EnvironmentObject var store: ContactStore
-    @State private var searchText : String = ""
-//    @AppStorage("userOnboarded") var userOnboarded: Bool = false
+    @State private var searchText: String = ""
+    @State var viewSettings: Bool = false
+    @State var viewDetails: Bool = false
+    @State var currentContact: CNContact = CNContact()
     
     var body: some View {
-        NavigationView {
+        NavigationView{
             VStack {
-                SearchBarView(text: $searchText, placeholder: "Type here")
-                List{
-                    ForEach(self.store.contacts.filter{
-                        self.searchText.isEmpty ? true : $0.givenName.lowercased().contains(self.searchText.lowercased())
-                    }, id: \.self.name) {
-                        (contact: CNContact) in                        
-                        HStack{
-                            if contact.thumbnailImageData != nil {
-                                Image(uiImage: UIImage(data: contact.thumbnailImageData!)!)
-                                    .resizable()
-                                    .clipShape(Circle())
-                                    .padding(.all,2)
-                                    .overlay(Circle().stroke(Color.gray, lineWidth: 1))
-                                    .frame(width: 50, height: 50, alignment: .center)
+                HStack {
+                    Text("Birthdays")
+                        .font(.system(size:48))
+                        .fontWeight(.bold)
+                        .padding(.top, 7)
+                        .padding(.bottom, -3)
+                        .padding(.leading, 15)
+                    Spacer()
+                    Button(action: { viewSettings.toggle() })
+                    {
+                        Image(systemName: "gearshape")
+                            .foregroundColor(.secondary)
+                            .font(.system(size: 36))
+                            .padding(.top, 7)
+                            .padding(.bottom, -3)
+                    }.padding(.trailing, 10)
+                }.padding(.bottom,5)
+                VStack {
+                    SearchBarView(text: $searchText, placeholder: "Type here")
+                    List{
+                        ForEach(self.store.contacts.filter{
+                            self.searchText.isEmpty ? true : $0.name.lowercased().contains(self.searchText.lowercased())
+                        }, id: \.self.name) {
+                            (contact: CNContact) in
+                            Button(action: {
+                                viewDetails.toggle()
+                                currentContact = contact
+                            }) {
+                                HStack{
+                                    if contact.thumbnailImageData != nil {
+                                        Image(uiImage: UIImage(data: contact.thumbnailImageData!)!)
+                                            .resizable()
+                                            .clipShape(Circle())
+                                            .padding(.all,2)
+                                            .overlay(Circle().stroke(Color.gray, lineWidth: 1))
+                                            .frame(width: 50, height: 50, alignment: .center)
 
-                            } else {
-                                Image(systemName: "person.fill")
-                                    .resizable()
-                                    .clipShape(Circle())
-                                    .padding(.all,2)
-                                    .overlay(Circle().stroke(Color.gray, lineWidth: 1))
-                                    .frame(width: 50, height: 50, alignment: .center)
-                            }
-                            VStack(alignment: .leading){
-                                Text(contact.name).font(.headline)
-                                Text(contact.bDay).font(.headline)
+                                    } else {
+                                        Image(systemName: "person.fill")
+                                            .resizable()
+                                            .clipShape(Circle())
+                                            .padding(.all,2)
+                                            .overlay(Circle().stroke(Color.gray, lineWidth: 1))
+                                            .frame(width: 50, height: 50, alignment: .center)
+                                    }
+                                    VStack(alignment: .leading){
+                                        Text(contact.name).font(.headline)
+                                        Text(contact.bDay).font(.headline)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "arrowshape.turn.up.forward")
+                                        .foregroundColor(.secondary)
+                                        .font(.system(size: 26))
+                                }
                             }
                         }
                     }
-                }.onAppear{
-                    DispatchQueue.main.async {
-                        self.store.fetchContacts()
+                    .onAppear{
+                        DispatchQueue.main.async {
+                            self.store.fetchContacts()
+                        }
                     }
                 }
-                .navigationBarTitle(Text("Upcoming Birthdays"))
+                NavigationLink(
+                    LocalizedStringKey(""),
+                    destination: SettingsView(),
+                    isActive: $viewSettings)
+                NavigationLink(
+                    LocalizedStringKey(""),
+                    destination: DetailedView(currentContact: currentContact),
+                    isActive: $viewDetails)
             }
+            .hiddenNavigationBarStyle()
         }
+    }
+}
+
+struct HiddenNavigationBar: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarHidden(true)
+    }
+}
+
+extension View {
+    func hiddenNavigationBarStyle() -> some View {
+        modifier( HiddenNavigationBar() )
     }
 }
 
@@ -105,8 +158,6 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-
-
 class ContactStore: ObservableObject {
     
     @Published var contacts: [CNContact] = []
@@ -122,7 +173,7 @@ class ContactStore: ObservableObject {
             
             if granted {
 
-                let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactBirthdayKey, CNContactThumbnailImageDataKey]
+                let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactBirthdayKey, CNContactThumbnailImageDataKey, CNContactPhoneNumbersKey, CNContactEmailAddressesKey]
                 let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
                 
                 request.sortOrder = .givenName
